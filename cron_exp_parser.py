@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 def cron_exp_parse(exp):
     parts = exp.split()
     od = {}
@@ -20,9 +22,15 @@ def cron_exp_parse(exp):
         d = int(od['minute'].split('/')[-1])
         for i in range(int(60/d)):
             ood['minute'].append(i * d)
+    elif ',' in od['minute']:
+        ood['minute'] = od['minute'].split(',')
+    elif '-' in od['minute']:
+        ood['minute'] = list(range(int(od['minute'].split('-')[0]), int(od['minute'].split('-')[-1])+1))
+    elif od['minute'] == '*':
+        ood['minute'] = 'every minute'
 
     return ood
 
 
 if __name__ == '__main__':
-    print(cron_exp_parse('*/15 0 1,15 * 1-5 /usr/bin/find'))
+    print(cron_exp_parse('0-15 0 1,15 * 1-5 /usr/bin/find'))
