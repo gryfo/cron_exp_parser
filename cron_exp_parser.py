@@ -1,36 +1,42 @@
 #!/usr/bin/env python3
 
-def cron_exp_parse(exp):
-    parts = exp.split()
-    od = {}
-    ood = {
-        'minute': [],
-        'hour': [],
-        'day of month': [],
-        'month': [],
-        'day of week': [],
-        'command': ''
-    }
-    od['minute'] = parts[0]
-    od['hour'] = parts[1]
-    od['day of month'] = parts[2]
-    od['month'] = parts[3]
-    od['day of week'] = parts[4]
-    od['command'] = parts[5]
-    
-    if '/' in od['minute']:
-        d = int(od['minute'].split('/')[-1])
+def field_parse(field_name, field_str):
+    out_value = []
+    if field_name == 'command':
+        return field_str
+
+    if '/' in field_str:
+        d = int(field_str.split('/')[-1])
         for i in range(int(60/d)):
-            ood['minute'].append(i * d)
-    elif ',' in od['minute']:
-        ood['minute'] = od['minute'].split(',')
-    elif '-' in od['minute']:
-        ood['minute'] = list(range(int(od['minute'].split('-')[0]), int(od['minute'].split('-')[-1])+1))
-    elif od['minute'] == '*':
-        ood['minute'] = 'every minute'
+            out_value.append(str(i * d))
+    elif ',' in field_str:
+        out_value = field_str.replace(',', ' ')
+    elif '-' in field_str:
+        a, b = field_str.split('-')
+        out_value = [str(n) for n in range(int(a), int(b)+1)]
+    elif field_str == '*':
+        out_value = f'every {field_name}'
+    else:
+        out_value = field_str
 
-    return ood
+    return out_value
 
+def cron_exp_parse(exp):
+    field_names = ['minute', 'hour', 'day of month', 'month', 'day of week', 'command']
+    out_dict = {}
+    parts = exp.split()
+
+
+    for p in parts:
+        fn = field_names[parts.index(p)]
+        v = field_parse(fn, p)
+        out_dict[fn] = v
+
+    return out_dict
+
+def print_table(d, w):
+    for k, v in d.items():
+        print(f"{k:<{w}} {' '.join(v) if isinstance(v, list) else v}")
 
 if __name__ == '__main__':
-    print(cron_exp_parse('0-15 0 1,15 * 1-5 /usr/bin/find'))
+    print_table(cron_exp_parse('*/15 0 1,15 * 1-5 /usr/bin/find'), 14)
