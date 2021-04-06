@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 
-def expand_asterix(field_name):
-    if field_name == 'minute':
-        return [str(n) for n in range(0, 60)]
-    if field_name == 'hour':
-        return [str(n) for n in range(0, 24)]
-    if field_name == 'day of month':
-        return [str(n) for n in range(1, 32)]
-    if field_name == 'month':
-        return [str(n) for n in range(1, 13)]
-    if field_name == 'day of week':
-        return [str(n) for n in range(1, 8)]
+field_ranges = {
+    'minute': range(0, 60),
+    'hour': range(0, 24),
+    'day of month': range(1, 32),
+    'month': range(1, 13),
+    'day of week': range(1, 8)
+}
 
 
 def field_parse(field_name, field_str):
@@ -20,7 +16,7 @@ def field_parse(field_name, field_str):
 
     if '/' in field_str:
         d = int(field_str.split('/')[-1])
-        for i in range(int(60/d)):
+        for i in range(field_ranges[field_name][0], int((field_ranges[field_name][-1]+1)/d)):
             out_value.append(str(i * d))
     elif ',' in field_str:
         out_value = field_str.replace(',', ' ')
@@ -28,7 +24,7 @@ def field_parse(field_name, field_str):
         a, b = field_str.split('-')
         out_value = [str(n) for n in range(int(a), int(b)+1)]
     elif field_str == '*':
-        out_value = ' '.join(expand_asterix(field_name))
+        out_value = ' '.join([str(n) for n in field_ranges[field_name]])
     else:
         out_value = field_str
 
@@ -53,4 +49,4 @@ def print_table(d, w):
 
 
 if __name__ == '__main__':
-    print_table(cron_exp_parse('*/15 0 * * * /usr/bin/find'), 14)
+    print_table(cron_exp_parse('*/20 */2 */2 */2 */2 /usr/bin/find'), 14)
