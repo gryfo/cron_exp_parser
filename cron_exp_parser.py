@@ -39,20 +39,25 @@ def cron_exp_parse(exp):
         fn = field_names[p]
         v = field_parse(fn, parts[p])
         out_dict[fn] = v
-
     return out_dict
 
 
-def print_table(d, w):
+def generate_table_string(d, w):
+    s = ''
     for k, v in d.items():
-        print(f"{k:<{w}} {' '.join(v) if isinstance(v, list) else v}")
+        s += f"{k:<{w}} {' '.join(v) if isinstance(v, list) else v}\n"
+    return s
 
 
-if __name__ == '__main__':
+def main():
     import argparse
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument('cron_expression', type=str, help='A valid cron expression to be parsed')
     args = parser.parse_args()
 
-    print_table(cron_exp_parse(args.cron_expression), 14)
+    print(generate_table_string(cron_exp_parse(args.cron_expression), 14))
+    
+
+if __name__ == '__main__':
+    main()
