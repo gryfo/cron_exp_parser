@@ -49,4 +49,10 @@ def print_table(d, w):
 
 
 if __name__ == '__main__':
-    print_table(cron_exp_parse('*/20 */2 */2 */2 */2 /usr/bin/find'), 14)
+    import argparse
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('cron_expression', type=str, help='A valid cron expression to be parsed')
+    args = parser.parse_args()
+
+    print_table(cron_exp_parse(args.cron_expression), 14)
