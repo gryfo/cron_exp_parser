@@ -24,11 +24,11 @@ def field_parse(field_name, field_str):
         a, b = field_str.split('-')
         out_value = [str(n) for n in range(int(a), int(b)+1)]
     elif field_str == '*':
-        out_value = ' '.join([str(n) for n in field_ranges[field_name]])
+        out_value = [str(n) for n in field_ranges[field_name]]
     else:
         out_value = field_str
 
-    return out_value
+    return ' '.join(out_value) if isinstance(out_value, list) else out_value
 
 
 def cron_exp_parse(exp):
@@ -45,7 +45,7 @@ def cron_exp_parse(exp):
 def generate_table_string(d, w):
     s = ''
     for k, v in d.items():
-        s += f"{k:<{w}} {' '.join(v) if isinstance(v, list) else v}\n"
+        s += f"{k:<{w}} {v}\n"
     return s
 
 
